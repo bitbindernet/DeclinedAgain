@@ -1,0 +1,7 @@
+*.vscode*
+cred*
+*.zip
+toctemplate.ps1
+toc.json
+declinedagain.toc
+DeclinedAgain/

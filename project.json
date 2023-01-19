@@ -1,0 +1,24 @@
+{
+  "Author": "Prongzs-Proudmoore (BitbinderGaming)",
+  "Version": {
+    "Major": 1,
+    "Minor": 0,
+    "Build": 0,
+    "Revision": 0,
+    "MajorRevision": 0,
+    "MinorRevision": 0
+  },
+  "curseProjectId": 811476,
+  "packageFiles": {
+    "tocFilename": "declinedagain.toc",
+    "luaFilename": "declinedagain.lua"
+  },
+  "Interface": "100002",
+  "SavedVariables": [
+    "DeclinedAgainDB"
+  ],
+  "SavedVariablesPerCharacter": [
+    "DeclinedAgainCharacterDB"
+  ],
+  "Title": "DeclinedAgain"
+}
