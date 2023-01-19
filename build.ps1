@@ -1,10 +1,7 @@
-$credentialFile = "./creds.ps1"
 $projectFile = "./project.json"
 $directoryName= $(get-childitem $projectFile).Directory.Name
 
 $toctemplate = Get-Content -raw $projectFile | convertfrom-json -AsHashtable
-. $credentialFile
-
 $v=$($toctemplate."Version")
 $toctemplate."Version" = [version]::New($v.Major,0,$($v.Build+1),0)
 $toctemplate | convertto-json | set-content $projectFile
