@@ -4,6 +4,40 @@ SLASH_DECLINEDAGAIN2 = '/declinedagain';
 local f = CreateFrame("Frame", "DeclinedAgain");
 local reset = 0;
 local clear = 0;
+local name = UnitName("player");
+local realm = GetRealmName();
+local DaUIFrame = CreateFrame("Frame", "DeclinedAgainUI", UIParent)
+--DaUIFrame:Hide();
+DaUIFrame:SetParent(PVEFrame);
+
+function DeclinedAgainGetAllData()
+    local message = 
+        "Total Applied:   "..DeclinedAgainDB.TOTAL_APPLY_COUNT..
+        "\nTotal Cancelled: "..DeclinedAgainDB.TOTAL_CANCEL_COUNT..
+        "\nTotal Delisted:  "..DeclinedAgainDB.TOTAL_DELIST_COUNT..
+        "\nTotal Declined:  "..DeclinedAgainDB.TOTAL_DECLINE_COUNT
+    return message
+end
+
+function DeclinedAgainGetPlayerData()
+    local message = 
+        name.." - "..realm..
+        "\nApplied:   "..DeclinedAgainCharacterDB.CHARACTER_APPLY_COUNT..
+        "\nCancelled: "..DeclinedAgainCharacterDB.CHARACTER_CANCEL_COUNT..
+        "\nDelisted:  "..DeclinedAgainCharacterDB.CHARACTER_DELIST_COUNT..
+        "\nDeclined:  "..DeclinedAgainCharacterDB.CHARACTER_DECLINE_COUNT
+    return message
+end
+
+function DeclinedAgainGetHelpData()
+    print("DeclinedAgain:");
+    print("Commands are: /da or /declinedagain")
+    print("optional parameters are 'help', 'all', 'clear', and 'reset' - /da all")
+    print("You can also use /da show/hide to enable/disable the on text anchored to the lfg window")
+    print(" --- ")
+    print("Note - This is currently beta build with bugs likely:")
+    print("Report bugs to: https://www.curseforge.com/wow/addons/declinedagain")
+end
 
 function DeclinedAgainPlayerEnteringWorld()
     DeclinedAgainDB = DeclinedAgainDB or {
@@ -72,6 +106,9 @@ function f:OnEvent(event, ...)
 	self[event](self, event, ...);
 end
 
+function DaUIFrame:OnEvent(event, ...)
+	self[event](self, event, ...);
+end
 --function f:ADDON_LOADED(event, addOnName)
 --	--print(event, addOnName);
 --end
@@ -91,7 +128,52 @@ function f:LFG_LIST_APPLICATION_STATUS_UPDATED(...)
     --print("Old Status: ",oldStatus);
     --print("Group Name: ",groupName);
     DeclinedAgainApplicationStatusUpdated(newStatus);
+    
 end
+
+function DaUIFrame:PLAYER_ENTERING_WORLD(event, isLogin, isReload)
+	--print(event, isLogin, isReload);
+    --DeclinedAgainPlayerEnteringWorld();
+    DaUIFrame:SetSize(100, 100)
+    local point, relativeFrame, relativePoint, xOffset, yOffset = 0
+    --DaUIFrame:SetPoint("CENTER", -200, 0)
+    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+    local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    myText:SetPoint("CENTER", DaUIFrame, "CENTER")
+    myText:SetText(
+        DeclinedAgainGetPlayerData()..
+        " \n "..
+        "All:\n"..
+        DeclinedAgainGetAllData()
+    )
+    myText:SetJustifyH("Left")
+end
+
+function DaUIFrame:LFG_LIST_APPLICATION_STATUS_UPDATED(...)
+    --   local _,_,_,newStatus = ...;
+
+    --local _,searchResultID,newStatus,oldStatus,groupName = ...;
+    --print("New LFG Event: ");
+    --print("Search ResultID: ",searchResultID);
+    --print("New Status: ",newStatus);
+    --print("Old Status: ",oldStatus);
+    --print("Group Name: ",groupName);
+    DeclinedAgainApplicationStatusUpdated(newStatus);
+    DaUIFrame:SetSize(100, 100)
+    local point, relativeFrame, relativePoint, xOffset, yOffset = 0
+    --DaUIFrame:SetPoint("CENTER", -200, 0)
+    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+    local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    myText:SetPoint("CENTER", DaUIFrame, "CENTER")
+    myText:SetText(
+        DeclinedAgainGetPlayerData()..
+        " \n "..
+        "All:\n"..
+        DeclinedAgainGetAllData()
+    )
+    myText:SetJustifyH("Left")
+end
+
 
 --f:RegisterEvent("ADDON_LOADED");
 --f:RegisterEvent("PLAYER_LOGOUT");
@@ -99,19 +181,36 @@ f:RegisterEvent("PLAYER_ENTERING_WORLD");
 f:RegisterEvent("LFG_LIST_APPLICATION_STATUS_UPDATED");
 f:SetScript("OnEvent", f.OnEvent);
 
+DaUIFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+DaUIFrame:RegisterEvent("LFG_LIST_APPLICATION_STATUS_UPDATED");
+DaUIFrame:SetScript("OnEvent", f.OnEvent);
 
 SlashCmdList["DECLINEDAGAIN"] = function(msg)
 
-    local name = UnitName("player");
-    local realm = GetRealmName();
+    if(msg == "show") then
+        DaUIFrame:SetSize(100, 100)
+        local point, relativeFrame, relativePoint, xOffset, yOffset = 0
+        --DaUIFrame:SetPoint("CENTER", -200, 0)
+        DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+        local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        myText:SetPoint("CENTER", DaUIFrame, "CENTER")
+        myText:SetText(
+            DeclinedAgainGetPlayerData()..
+            " \n "..
+            "All:\n"..
+            DeclinedAgainGetAllData()
+        )
+        myText:SetJustifyH("Left")
+        DaUIFrame:Show();
+    end
+
+    if(msg == "hide") then
+        DaUIFrame:Hide()
+    end
+
 
     if(msg == "help") then
-        print("DeclinedAgain:");
-        print("Commands are: /da or /declinedagain")
-        print("optional parameters are 'help', 'all', 'clear', and 'reset' - /da all")
-        print("Note - This is currently an alpha build with bugs:")
-        print(" --- ")
-        print("Report bugs to: https://www.curseforge.com/wow/addons/declinedagain")
+        DeclinedAgainGetHelpData()
         return;
     end
 
@@ -140,19 +239,13 @@ SlashCmdList["DECLINEDAGAIN"] = function(msg)
     end
 
     if(msg == "all") then
-        print("DeclinedAgain:");
-        print("Total Applied:   "         , DeclinedAgainDB.TOTAL_APPLY_COUNT );
-        print("Total Cancelled: "       , DeclinedAgainDB.TOTAL_CANCEL_COUNT);
-        print("Total Delisted:  "        , DeclinedAgainDB.TOTAL_DELIST_COUNT);
-        print("Total Declined:  "        , DeclinedAgainDB.TOTAL_DECLINE_COUNT);
+        print("DeclinedAgain - All")
+        print(DeclinedAgainGetAllData())
         return;
     end
 
     if(msg == "") then
-        print("DeclinedAgain (" , name , " - " , realm , "):");
-        print("Applied:   "     , DeclinedAgainCharacterDB.CHARACTER_APPLY_COUNT   );
-        print("Cancelled: "   , DeclinedAgainCharacterDB.CHARACTER_CANCEL_COUNT  );
-        print("Delisted:  "    , DeclinedAgainCharacterDB.CHARACTER_DELIST_COUNT  );
-        print("Declined:  "    , DeclinedAgainCharacterDB.CHARACTER_DECLINE_COUNT );
+        print("DeclinedAgain - Player")
+        print(DeclinedAgainGetPlayerData())
     end
 end
