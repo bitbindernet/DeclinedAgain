@@ -3,7 +3,7 @@
   "Version": {
     "Major": 1,
     "Minor": 0,
-    "Build": 29,
+    "Build": 40,
     "Revision": 0,
     "MajorRevision": 0,
     "MinorRevision": 0
@@ -13,7 +13,7 @@
     "tocFilename": "declinedagain.toc",
     "luaFilename": "declinedagain.lua"
   },
-  "Interface": "100005",
+  "Interface": "100205",
   "SavedVariables": [
     "DeclinedAgainDB"
   ],

@@ -40,18 +40,39 @@ function DeclinedAgainGetHelpData()
 end
 
 function DeclinedAgainPlayerEnteringWorld()
-    DeclinedAgainDB = DeclinedAgainDB or {
-        TOTAL_APPLY_COUNT    = 0,
-        TOTAL_CANCEL_COUNT   = 0,
-        TOTAL_DELIST_COUNT   = 0,
-        TOTAL_DECLINE_COUNT  = 0
-    };
-    DeclinedAgainCharacterDB = DeclinedAgainCharacterDB or {
-        CHARACTER_APPLY_COUNT   = 0,
-        CHARACTER_CANCEL_COUNT  = 0,
-        CHARACTER_DELIST_COUNT  = 0,
-        CHARACTER_DECLINE_COUNT = 0
-    };
+    DeclinedAgainDB = DeclinedAgainDB or {};
+    if(DeclinedAgainDB.TOTAL_APPLY_COUNT   == nil) then
+       DeclinedAgainDB.TOTAL_APPLY_COUNT   =  0;
+    end
+    if(DeclinedAgainDB.TOTAL_CANCEL_COUNT  == nil) then
+       DeclinedAgainDB.TOTAL_CANCEL_COUNT  = 0;
+    end
+    if(DeclinedAgainDB.TOTAL_DELIST_COUNT  == nil) then
+       DeclinedAgainDB.TOTAL_DELIST_COUNT  = 0;
+    end
+    if(DeclinedAgainDB.TOTAL_DECLINE_COUNT == nil) then
+       DeclinedAgainDB.TOTAL_DECLINE_COUNT = 0;
+    end
+    if(DeclinedAgainDB.RESET               == nil) then
+       DeclinedAgainDB.RESET               = 0;
+    end
+
+    DeclinedAgainCharacterDB = DeclinedAgainCharacterDB or {};
+    if DeclinedAgainCharacterDB.CHARACTER_APPLY_COUNT == nil then
+       DeclinedAgainCharacterDB.CHARACTER_APPLY_COUNT = 0;
+    end
+    if DeclinedAgainCharacterDB.CHARACTER_CANCEL_COUNT == nil then
+       DeclinedAgainCharacterDB.CHARACTER_CANCEL_COUNT = 0;
+    end
+    if DeclinedAgainCharacterDB.CHARACTER_DELIST_COUNT == nil then
+       DeclinedAgainCharacterDB.CHARACTER_DELIST_COUNT = 0;
+    end
+    if DeclinedAgainCharacterDB.CHARACTER_DECLINE_COUNT == nil then
+       DeclinedAgainCharacterDB.CHARACTER_DECLINE_COUNT = 0;
+    end
+    if DeclinedAgainCharacterDB.CLEAR == nil then
+       DeclinedAgainCharacterDB.CLEAR = 0;
+    end
 end
 
 function DeclinedAgainClearPlayerData()
@@ -59,10 +80,9 @@ function DeclinedAgainClearPlayerData()
         CHARACTER_APPLY_COUNT   = 0,
         CHARACTER_CANCEL_COUNT  = 0,
         CHARACTER_DELIST_COUNT  = 0,
-        CHARACTER_DECLINE_COUNT = 0
+        CHARACTER_DECLINE_COUNT = 0,
+        CLEAR                   = 0
     };
-    clear = 0;
-    reset = 0;
 end
 
 function DeclinedAgainResetAllData()
@@ -70,16 +90,16 @@ function DeclinedAgainResetAllData()
         TOTAL_APPLY_COUNT    = 0,
         TOTAL_CANCEL_COUNT   = 0,
         TOTAL_DELIST_COUNT   = 0,
-        TOTAL_DECLINE_COUNT  = 0
+        TOTAL_DECLINE_COUNT  = 0,
+        RESET                = 0
     };
     DeclinedAgainCharacterDB = {
         CHARACTER_APPLY_COUNT   = 0,
         CHARACTER_CANCEL_COUNT  = 0,
         CHARACTER_DELIST_COUNT  = 0,
-        CHARACTER_DECLINE_COUNT = 0
+        CHARACTER_DECLINE_COUNT = 0,
+        CLEAR                   = 0
     };
-    reset = 0;
-    clear = 0;
 end
 
 
@@ -137,7 +157,7 @@ function DaUIFrame:PLAYER_ENTERING_WORLD(event, isLogin, isReload)
     DaUIFrame:SetSize(100, 100)
     local point, relativeFrame, relativePoint, xOffset, yOffset = 0
     --DaUIFrame:SetPoint("CENTER", -200, 0)
-    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", -150, -110)
     local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     myText:SetPoint("CENTER", DaUIFrame, "CENTER")
     myText:SetText(
@@ -162,7 +182,7 @@ function DaUIFrame:LFG_LIST_APPLICATION_STATUS_UPDATED(...)
     DaUIFrame:SetSize(100, 100)
     local point, relativeFrame, relativePoint, xOffset, yOffset = 0
     --DaUIFrame:SetPoint("CENTER", -200, 0)
-    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+    DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", -150, -110)
     local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     myText:SetPoint("CENTER", DaUIFrame, "CENTER")
     myText:SetText(
@@ -191,7 +211,7 @@ SlashCmdList["DECLINEDAGAIN"] = function(msg)
         DaUIFrame:SetSize(100, 100)
         local point, relativeFrame, relativePoint, xOffset, yOffset = 0
         --DaUIFrame:SetPoint("CENTER", -200, 0)
-        DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", 20, 10)
+        DaUIFrame:SetPoint("BOTTOMLEFT", PVEFrame.NineSlice, "BOTTOMRIGHT", -150, -110)
         local myText = DaUIFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         myText:SetPoint("CENTER", DaUIFrame, "CENTER")
         myText:SetText(
@@ -215,25 +235,25 @@ SlashCmdList["DECLINEDAGAIN"] = function(msg)
     end
 
     if(msg == "reset") then
-        if(reset == 1) then
+        if(DeclinedAgainDB.RESET == 1) then
             print("Resetting all DeclinedAgain data");
             DeclinedAgainResetAllData();
         end
-        if(reset == 0) then
+        if(DeclinedAgainDB.RESET == 0) then
             print("Reset removes ALL totals and counts across all characters - run /da reset again to continue")
-            reset = 1;
+            DeclinedAgainDB.RESET = 1;
         end
         return;
     end
 
     if(msg == "clear") then
-        if(clear == 1) then
+        if(DeclinedAgainCharacterDB.CLEAR == 1) then
             print("Resetting all DeclinedAgain data");
             DeclinedAgainClearPlayerData();
         end
-        if(clear == 0) then
+        if(DeclinedAgainCharacterDB.CLEAR == 0) then
             print("Clear removes current player counts, but leaves running totals - run /da clear again to continue")
-            clear = 1;
+            DeclinedAgainCharacterDB.CLEAR = 1;
         end
         return;
     end
